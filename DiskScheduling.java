@@ -11,33 +11,46 @@ interface DiskScheduler
 
 class FCFS implements DiskScheduler
 {
-	public int serviceRequests(int referenceString[])
+	public int serviceRequests(int array[])
 	{
 		int headMovement = 0;
 		int x = 0;
-		for(int index = 0; index < referenceString.length; index++)
+		int key = HEAD;
+		boolean flag = true;
+		if(array[0] < key)
+			flag = false;
+		for(int i = 0; i < array.length; i++)
 		{
-			if(index == 0)
+			if(i == array.length-1)
 			{
-				if(referenceString[index] > HEAD)
+				if(array[i] > key)
 				{
-					x = referenceString[index] - HEAD;
-				}
-			}
-			else
-			{	if(referenceString[index] > referenceString[index - 1])
-				{
-					x = referenceString[index] - referenceString[index - 1];
-				}
-				else if(referenceString[index] < referenceString[index - 1])
-				{
-					x = referenceString[index - 1] - referenceString[index];
+					headMovement += array[i] - key;
 				}
 				else
-					x = 0;
+				{
+					headMovement += key - array[i];
+				}
 			}
-			headMovement += x;
-		}
+			else if(flag)
+			{
+				if(array[i+1] < array[i])
+				{
+					headMovement += array[i] - key;
+					key = array[i];
+					flag = false;
+				}
+			}
+			else if(!flag)
+			{
+				if(array[i+1] > array[i])
+				{
+					headMovement += key - array[i];
+					key = array[i];
+					flag = true;
+				}
+			}
+		}		
 		return(headMovement);
 	}
 
@@ -80,6 +93,7 @@ class SSTF implements DiskScheduler
 			{
 				key = HEAD;
 				temp = findNearest(key, list);
+				System.out.println(temp+","+key);
 				if(temp > key)
 					x = temp - key;
 				else if(temp < key)
@@ -92,6 +106,7 @@ class SSTF implements DiskScheduler
 				key = temp;
 				list.remove(new Integer(temp));
 				temp = findNearest(key, list);
+				System.out.println(temp+","+key);
 				if(temp > key)
 					x = temp - key;
 				else if(temp < key)
@@ -134,8 +149,7 @@ class CSCAN implements DiskScheduler
 	{
 		Arrays.sort(referenceString);
 		int n = largestValue(referenceString);
-		int headMovement = (HIGH - HEAD) + (HIGH - LOW) + (n - LOW);
-		return(headMovement);
+		return((HIGH - HEAD) + (HIGH - LOW) + (n - LOW));
 	}
 }
 
